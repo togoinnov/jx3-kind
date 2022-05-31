@@ -1,0 +1,28 @@
+name: BDD test
+on:
+#  push:
+#    branches:
+#    - main
+#    - master
+
+  # TODO disable kind BDD for now until it works reliably
+  # pull_request:
+
+  # allow manual triggering
+  workflow_dispatch: {}
+jobs:
+  kind:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Init Hermit
+      run: ./bin/hermit env --raw >> $GITHUB_ENV
+    - name: Kind
+      env:
+        GIT_OWNER: jenkins-x-bdd
+        GIT_USERNAME: ${{ secrets.BDD_USERNAME }}
+        GIT_TOKEN: ${{ secrets.BDD_TOKEN }}
+        GITHUB_RUN_ID: ${{ secrets.GITHUB_RUN_ID }}
+        GITHUB_RUN_NUMBER: ${{ secrets.GITHUB_RUN_NUMBER }}
+      run: |
+        .github/workflows/bdd.sh
